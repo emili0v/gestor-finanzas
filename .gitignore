@@ -1,7 +1,27 @@
-/vendor/
-node_modules/
+# Logs y temporales
+*.log
 npm-debug.log
 yarn-error.log
+.DS_Store
+Thumbs.db
+
+# Entornos
+.env
+.env.backup
+.env.production
+auth.json
+
+# IDEs y configuraciones locales
+/.fleet
+/.idea
+/.nova
+/.phpunit.cache
+/.vscode
+/.zed
+
+# Dependencias
+/vendor/
+/node_modules/
 
 # Laravel 4 specific
 bootstrap/compiled.php
@@ -15,16 +35,14 @@ public/hot
 public_html/storage
 public_html/hot
 
+# Claves y cache
 storage/*.key
-.env
-Homestead.yaml
-Homestead.json
-/.vagrant
+.phpactor.json
 .phpunit.result.cache
 
+# Otros
+/.vagrant
 /public/build
 /storage/pail
-.env.backup
-.env.production
-.phpactor.json
-auth.json
+Homestead.yaml
+Homestead.json
