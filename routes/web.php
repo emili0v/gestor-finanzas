@@ -2,8 +2,12 @@
 
 use Illuminate\Support\Facades\Route;
 
-// 📊 Dashboard
 Route::get('/', function () {
+    return view('landing');
+})->name('landing');
+
+// 📊 Dashboard
+Route::get('/dashboard', function () {
     return view('dashboard');
 })->name('dashboard');
 
