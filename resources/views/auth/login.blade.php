@@ -10,6 +10,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body>
+    @include('components.navbar')
     <div class="auth-container d-flex align-items-center justify-content-center">
         <div class="container">
             <div class="row justify-content-center">
