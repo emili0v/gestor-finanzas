@@ -18,8 +18,9 @@ Route::get('/login', function () {
 })->name('login');
 
 Route::post('/login', function () {
-    // 👇 Lógica dummy (más adelante se reemplaza con Auth real)
-    return redirect()->route('dashboard');
+    // 👇 Lógica dummy con redirección basada en rol
+    // En implementación real, aquí iría la autenticación
+    return redirect()->route('app.mi-sueldo');
 })->name('login.post');
 
 // Register
@@ -61,3 +62,16 @@ Route::get('/reportes', function () {
 Route::get('/perfil', function () {
     return view('profile');
 })->name('profile');
+
+Route::prefix('app')->name('app.')->group(function () {
+    Route::get('/mi-sueldo', [App\Http\Controllers\User\UserDashboardController::class, 'miSueldo'])->name('mi-sueldo');
+    
+    Route::get('/historial', [App\Http\Controllers\User\UserHistorialController::class, 'index'])->name('historial');
+    
+    Route::get('/gastos', [App\Http\Controllers\User\UserExpenseController::class, 'index'])->name('gastos');
+    Route::post('/gastos', [App\Http\Controllers\User\UserExpenseController::class, 'store'])->name('gastos.store');
+    
+    Route::get('/metas', [App\Http\Controllers\User\UserGoalsController::class, 'index'])->name('metas');
+    
+    Route::get('/perfil', [App\Http\Controllers\User\UserProfileController::class, 'index'])->name('perfil');
+});

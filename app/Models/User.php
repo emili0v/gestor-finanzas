@@ -21,6 +21,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'empleado_id',
     ];
 
     /**
@@ -44,5 +45,20 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function empleado()
+    {
+        return $this->belongsTo(Empleado::class);
+    }
+
+    public function isAdmin()
+    {
+        return $this->empleado && $this->empleado->role && $this->empleado->role->nombre === 'Administrador';
+    }
+
+    public function isEmpleado()
+    {
+        return $this->empleado && $this->empleado->role && $this->empleado->role->nombre === 'Empleado';
     }
 }
