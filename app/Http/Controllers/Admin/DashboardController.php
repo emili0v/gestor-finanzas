@@ -24,20 +24,20 @@ class DashboardController extends Controller
         // 2. Cálculos de nómina (convertir centavos a pesos)
         $totalSueldosBrutos = Sueldo::sum('monto_bruto');
         
-        // 3. Movimientos del mes actual (bonos y descuentos) - CORREGIDO
+        // 3. Movimientos del mes actual - CORREGIDO Y MEJORADO
         $bonosDelMes = Movimiento::whereBetween('fecha', [$inicioMes, $finMes])
                                 ->where('monto', '>', 0)
                                 ->sum('monto') / 100; // Convertir centavos a pesos
                                 
-        $descuentosDelMes = Movimiento::whereBetween('fecha', [$inicioMes, $finMes])
+        $descuentosDelMes = abs(Movimiento::whereBetween('fecha', [$inicioMes, $finMes])
                                      ->where('monto', '<', 0)
-                                     ->sum('monto') / 100; // Convertir centavos a pesos
+                                     ->sum('monto') / 100); // Convertir centavos a pesos y hacer positivo
 
         // 4. Cálculo del costo total de nómina del mes
-        $costoNominaDelMes = $totalSueldosBrutos + $bonosDelMes + $descuentosDelMes;
+        $costoNominaDelMes = $totalSueldosBrutos + $bonosDelMes - $descuentosDelMes;
         
-        // 5. Balance general (ingresos - egresos)
-        $balanceGeneral = $bonosDelMes + $descuentosDelMes;
+        // 5. Balance de movimientos (bonos menos descuentos)
+        $balanceMovimientos = $bonosDelMes - $descuentosDelMes;
         
         // 6. Últimos movimientos (últimos 10)
         $ultimosMovimientos = Movimiento::with(['empleado', 'categoria'])
@@ -60,6 +60,10 @@ class DashboardController extends Controller
                                       return $grupo->count();
                                   });
 
+        // 9. Estadísticas adicionales para el dashboard
+        $totalBonos = Movimiento::where('monto', '>', 0)->count();
+        $totalDescuentos = Movimiento::where('monto', '<', 0)->count();
+
         return view('dashboard', compact(
             'totalEmpleados',
             'empleadosActivos',
@@ -67,10 +71,12 @@ class DashboardController extends Controller
             'bonosDelMes',
             'descuentosDelMes',
             'costoNominaDelMes',
-            'balanceGeneral',
+            'balanceMovimientos',
             'ultimosMovimientos',
             'ultimosEmpleados',
             'empleadosPorRol',
+            'totalBonos',
+            'totalDescuentos',
             'mesActual'
         ));
     }

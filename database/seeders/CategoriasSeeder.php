@@ -27,9 +27,13 @@ class CategoriasSeeder extends Seeder
         Categoria::create(['nombre' => 'Asignación Especial', 'tipo' => 'ingreso']);
 
         // --- CATEGORÍAS DE DESCUENTOS (TIPO: EGRESO) ---
+        // Estas categorías coinciden con las del DescuentoController
         Categoria::create(['nombre' => 'Adelanto de Sueldo', 'tipo' => 'egreso']);
         Categoria::create(['nombre' => 'Descuento por Inasistencia', 'tipo' => 'egreso']);
         Categoria::create(['nombre' => 'Daño a Propiedad de Hotel', 'tipo' => 'egreso']);
         Categoria::create(['nombre' => 'Cuota Préstamo Interno', 'tipo' => 'egreso']);
+        Categoria::create(['nombre' => 'Descuento Uniforme', 'tipo' => 'egreso']);
+        Categoria::create(['nombre' => 'Multa por Atraso', 'tipo' => 'egreso']);
+        Categoria::create(['nombre' => 'Descuento Alimentación', 'tipo' => 'egreso']);
     }
 }

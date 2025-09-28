@@ -6,6 +6,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Admin\EmpleadoController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\BonoController;
+use App\Http\Controllers\Admin\DescuentoController; // NUEVA LÍNEA
 
 // Landing page (pública)
 Route::get('/', function () {
@@ -43,7 +44,7 @@ Route::post('/logout', function () {
 Route::middleware(['auth', 'user.role:Administrador'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    // Bonos y Comisiones (antes ingresos) - RUTAS CORREGIDAS
+    // Bonos y Comisiones (antes ingresos)
     Route::get('/ingresos', [BonoController::class, 'index'])->name('ingresos.index');
     Route::get('/ingresos/crear', [BonoController::class, 'create'])->name('ingresos.create');
     Route::post('/ingresos', [BonoController::class, 'store'])->name('ingresos.store');
@@ -52,27 +53,23 @@ Route::middleware(['auth', 'user.role:Administrador'])->group(function () {
     Route::put('/ingresos/{bono}', [BonoController::class, 'update'])->name('ingresos.update');
     Route::delete('/ingresos/{bono}', [BonoController::class, 'destroy'])->name('ingresos.destroy');
 
-    Route::get('/egresos', function () {
-        return view('egresos.index');
-    })->name('egresos.index');
+    // === NUEVAS RUTAS PARA DESCUENTOS Y ADELANTOS ===
+    Route::get('/egresos', [DescuentoController::class, 'index'])->name('egresos.index');
+    Route::get('/egresos/crear', [DescuentoController::class, 'create'])->name('egresos.create');
+    Route::post('/egresos', [DescuentoController::class, 'store'])->name('egresos.store');
+    Route::get('/egresos/{descuento}', [DescuentoController::class, 'show'])->name('egresos.show');
+    Route::get('/egresos/{descuento}/editar', [DescuentoController::class, 'edit'])->name('egresos.edit');
+    Route::put('/egresos/{descuento}', [DescuentoController::class, 'update'])->name('egresos.update');
+    Route::delete('/egresos/{descuento}', [DescuentoController::class, 'destroy'])->name('egresos.destroy');
 
     // === RUTAS COMPLETAS PARA EMPLEADOS (CRUD) ===
-    // Lista de empleados
     Route::get('/empleados', [EmpleadoController::class, 'index'])->name('empleados.index');
-    
-    // Crear empleado
     Route::get('/empleados/crear', [EmpleadoController::class, 'create'])->name('empleados.create');
     Route::post('/empleados', [EmpleadoController::class, 'store'])->name('empleados.store');
-    
-    // Ver empleado específico
     Route::get('/empleados/{empleado}', [EmpleadoController::class, 'show'])->name('empleados.show');
-    
-    // Editar empleado
     Route::get('/empleados/{empleado}/editar', [EmpleadoController::class, 'edit'])->name('empleados.edit');
     Route::put('/empleados/{empleado}', [EmpleadoController::class, 'update'])->name('empleados.update');
     Route::patch('/empleados/{empleado}', [EmpleadoController::class, 'update'])->name('empleados.update');
-    
-    // Eliminar empleado
     Route::delete('/empleados/{empleado}', [EmpleadoController::class, 'destroy'])->name('empleados.destroy');
 
     Route::get('/reportes', function () {

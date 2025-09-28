@@ -24,13 +24,13 @@
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('ingresos.*') ? 'active' : '' }}" href="{{ route('ingresos.index') }}">
                         <i class="bi bi-arrow-up-circle me-2"></i>
-                        Ingresos
+                        Bonos y Comisiones
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('egresos.*') ? 'active' : '' }}" href="{{ route('egresos.index') }}">
                         <i class="bi bi-arrow-down-circle me-2"></i>
-                        Egresos
+                        Descuentos y Adelantos
                     </a>
                 </li>
                 <li class="nav-item">
