@@ -3,16 +3,15 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
+use App\Models\Sueldo;
 
 class SueldosSeeder extends Seeder
 {
     public function run(): void
     {
-        DB::table('sueldos')->insert([
-            ['empleado_id' => 1, 'monto' => 1200000, 'fecha' => '2025-01-01', 'created_at' => now(), 'updated_at' => now()],
-            ['empleado_id' => 2, 'monto' => 950000, 'fecha' => '2025-01-01', 'created_at' => now(), 'updated_at' => now()],
-            ['empleado_id' => 3, 'monto' => 800000, 'fecha' => '2025-01-01', 'created_at' => now(), 'updated_at' => now()],
-        ]);
+        // Asigna sueldos a los empleados de ejemplo creados en EmpleadosSeeder
+        // Asegúrate de que los IDs de empleado (1, 2, 3...) existan
+        Sueldo::create(['empleado_id' => 1, 'monto_bruto' => 1200000]); // Para Juan Pérez
+        Sueldo::create(['empleado_id' => 2, 'monto_bruto' => 950000]);  // Para María González
     }
 }

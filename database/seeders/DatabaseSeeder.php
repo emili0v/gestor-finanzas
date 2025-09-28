@@ -17,6 +17,7 @@ class DatabaseSeeder extends Seeder
             EmpleadosSeeder::class,
             SueldosSeeder::class,
             MovimientosSeeder::class,
+            UserSeeder::class,
         ]);
     }
 }

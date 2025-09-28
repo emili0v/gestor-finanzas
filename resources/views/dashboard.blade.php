@@ -11,15 +11,51 @@
 
     <!-- Cards de métricas -->
     <div class="row mb-4">
-        <div class="col-xl-4 col-md-6 mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Total Empleados
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $totalEmpleados }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="bi bi-people fs-2 text-primary"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                Costo Nómina Base
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">${{ number_format($totalSueldosBrutos, 2) }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="bi bi-cash-stack fs-2 text-info"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
             <div class="card border-left-success shadow h-100 py-2">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                Ingresos Totales
+                                Bonos del Mes
                             </div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">$125,450.00</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">${{ number_format($bonosDelMes, 2) }}</div>
                         </div>
                         <div class="col-auto">
                             <i class="bi bi-arrow-up-circle fs-2 text-success"></i>
@@ -29,36 +65,18 @@
             </div>
         </div>
 
-        <div class="col-xl-4 col-md-6 mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
             <div class="card border-left-danger shadow h-100 py-2">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
-                                Egresos Totales
+                                Descuentos del Mes
                             </div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">$89,320.00</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">${{ number_format(abs($descuentosDelMes), 2) }}</div>
                         </div>
                         <div class="col-auto">
                             <i class="bi bi-arrow-down-circle fs-2 text-danger"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-xl-4 col-md-6 mb-4">
-            <div class="card border-left-primary shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                Balance Total
-                            </div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">$36,130.00</div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="bi bi-wallet2 fs-2 text-primary"></i>
                         </div>
                     </div>
                 </div>
@@ -86,27 +104,27 @@
                                 </tr>
                             </thead>
                             <tbody>
+                                @forelse($ultimosMovimientos as $movimiento)
                                 <tr>
-                                    <td>2024-08-20</td>
-                                    <td>Venta de productos</td>
-                                    <td><span class="badge bg-success">Ingreso</span></td>
-                                    <td class="text-success">+$15,500.00</td>
+                                    <td>{{ $movimiento->fecha ? \Carbon\Carbon::parse($movimiento->fecha)->format('Y-m-d') : $movimiento->created_at->format('Y-m-d') }}</td>
+                                    <td>{{ $movimiento->descripcion }}</td>
+                                    <td>
+                                        @if($movimiento->monto > 0)
+                                            <span class="badge bg-success">Ingreso</span>
+                                        @else
+                                            <span class="badge bg-danger">Egreso</span>
+                                        @endif
+                                    </td>
+                                    <td class="{{ $movimiento->monto > 0 ? 'text-success' : 'text-danger' }}">
+                                        {{ $movimiento->monto > 0 ? '+' : '' }}${{ number_format($movimiento->monto, 2) }}
+                                    </td>
                                     <td><span class="badge bg-success">Completado</span></td>
                                 </tr>
+                                @empty
                                 <tr>
-                                    <td>2024-08-19</td>
-                                    <td>Pago de nómina</td>
-                                    <td><span class="badge bg-danger">Egreso</span></td>
-                                    <td class="text-danger">-$8,200.00</td>
-                                    <td><span class="badge bg-success">Completado</span></td>
+                                    <td colspan="5" class="text-center text-muted">No hay movimientos registrados</td>
                                 </tr>
-                                <tr>
-                                    <td>2024-08-18</td>
-                                    <td>Servicios profesionales</td>
-                                    <td><span class="badge bg-success">Ingreso</span></td>
-                                    <td class="text-success">+$3,750.00</td>
-                                    <td><span class="badge bg-warning">Pendiente</span></td>
-                                </tr>
+                                @endforelse
                             </tbody>
                         </table>
                     </div>
@@ -127,6 +145,10 @@
 
 .border-left-primary {
     border-left: 0.25rem solid #0d6efd !important;
+}
+
+.border-left-info {
+    border-left: 0.25rem solid #36b9cc !important;
 }
 
 .text-gray-800 {

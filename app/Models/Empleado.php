@@ -14,8 +14,8 @@ class Empleado extends Model
     // 👇 Para que siempre aparezca en JSON
     protected $appends = ['rut_completo'];
 
-    // 👇 Para ocultar estos campos en JSON
-    protected $hidden = ['rut', 'dig_verificador'];
+    // 👇 REMOVER esta línea que estaba causando problemas
+    // protected $hidden = ['rut', 'dig_verificador']; // ❌ QUITAR ESTO
 
     // Relación con rol
     public function role()
@@ -23,7 +23,7 @@ class Empleado extends Model
         return $this->belongsTo(Role::class);
     }
 
-    // Relación con sueldos
+    // Relación con sueldos (corregida)
     public function sueldos()
     {
         return $this->hasMany(Sueldo::class);
@@ -33,6 +33,12 @@ class Empleado extends Model
     public function movimientos()
     {
         return $this->hasMany(Movimiento::class);
+    }
+
+    // Relación con usuario
+    public function user()
+    {
+        return $this->hasOne(User::class);
     }
 
     // 👇 Accessor para obtener el RUT completo

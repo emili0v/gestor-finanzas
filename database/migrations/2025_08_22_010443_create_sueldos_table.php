@@ -11,8 +11,7 @@ return new class extends Migration
         Schema::create('sueldos', function (Blueprint $table) {
             $table->id();
             $table->foreignId('empleado_id')->constrained('empleados')->onDelete('cascade');
-            $table->date('fecha'); // Campo que pide el Seeder
-            $table->decimal('monto', 10, 2); // Campo que pide el Seeder
+            $table->decimal('monto_bruto', 10, 2);
             $table->timestamps();
         });
     }

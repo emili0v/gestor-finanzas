@@ -9,7 +9,7 @@ class Sueldo extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['empleado_id', 'fecha', 'monto'];
+    protected $fillable = ['empleado_id', 'monto_bruto'];
 
     // Un sueldo pertenece a un empleado
     public function empleado()

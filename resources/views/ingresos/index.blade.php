@@ -5,14 +5,22 @@
     <div class="row mb-4">
         <div class="col-12 d-flex justify-content-between align-items-center">
             <div>
-                <h1 class="h3 mb-0 text-gray-800">Gestión de Ingresos</h1>
-                <p class="text-muted">Administra todos los ingresos de la empresa</p>
+                <h1 class="h3 mb-0 text-gray-800">Bonos y Comisiones</h1>
+                <p class="text-muted">Gestiona bonos, comisiones y horas extra del personal del hotel</p>
             </div>
-            <button class="btn btn-primary">
-                <i class="bi bi-plus-circle me-2"></i>Nuevo Ingreso
-            </button>
+            <a href="{{ route('bonos.create') }}" class="btn btn-primary">
+                <i class="bi bi-plus-circle me-2"></i>Asignar Bono
+            </a>
         </div>
     </div>
+
+    <!-- Mostrar mensajes de éxito -->
+    @if (session('success'))
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    @endif
 
     <!-- Tarjetas de resumen -->
     <div class="row mb-4">
@@ -22,9 +30,9 @@
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                Ingresos del Mes
+                                Bonos del Mes
                             </div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">$45,230.00</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">${{ number_format($bonosDelMes, 2) }}</div>
                         </div>
                         <div class="col-auto">
                             <i class="bi bi-calendar-month fs-2 text-success"></i>
@@ -40,9 +48,9 @@
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
-                                Total de Registros
+                                Total de Bonos
                             </div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">156</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $totalBonos }}</div>
                         </div>
                         <div class="col-auto">
                             <i class="bi bi-list-ol fs-2 text-info"></i>
@@ -53,17 +61,17 @@
         </div>
     </div>
 
-    <!-- Tabla de ingresos -->
+    <!-- Tabla de bonos -->
     <div class="card shadow mb-4">
         <div class="card-header py-3 d-flex justify-content-between align-items-center">
-            <h6 class="m-0 font-weight-bold text-primary">Lista de Ingresos</h6>
+            <h6 class="m-0 font-weight-bold text-primary">Lista de Bonos Asignados</h6>
             <div class="d-flex gap-2">
-                <input type="text" class="form-control form-control-sm" placeholder="Buscar..." style="width: 200px;">
+                <input type="text" class="form-control form-control-sm" placeholder="Buscar empleado..." style="width: 200px;">
                 <select class="form-select form-select-sm" style="width: 150px;">
                     <option>Todos los tipos</option>
-                    <option>Ventas</option>
-                    <option>Servicios</option>
-                    <option>Otros</option>
+                    <option>Horas Extra</option>
+                    <option>Comisiones</option>
+                    <option>Bonos Desempeño</option>
                 </select>
             </div>
         </div>
@@ -74,127 +82,81 @@
                         <tr>
                             <th>ID</th>
                             <th>Fecha</th>
+                            <th>Empleado</th>
                             <th>Descripción</th>
                             <th>Categoría</th>
                             <th>Monto</th>
-                            <th>Estado</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
+                        @forelse($bonos as $bono)
                         <tr>
-                            <td>001</td>
-                            <td>2024-08-20</td>
-                            <td>Venta de productos tecnológicos</td>
-                            <td><span class="badge bg-primary">Ventas</span></td>
-                            <td class="text-success fw-bold">$15,500.00</td>
-                            <td><span class="badge bg-success">Completado</span></td>
+                            <td>{{ str_pad($bono->id, 3, '0', STR_PAD_LEFT) }}</td>
+                            <td>{{ $bono->fecha ? \Carbon\Carbon::parse($bono->fecha)->format('Y-m-d') : $bono->created_at->format('Y-m-d') }}</td>
                             <td>
-                                <button class="btn btn-warning btn-sm me-1">
+                                <strong>{{ $bono->empleado->nombre }}</strong><br>
+                                <small class="text-muted">{{ $bono->empleado->role->nombre ?? 'Sin rol' }}</small>
+                            </td>
+                            <td>{{ $bono->descripcion }}</td>
+                            <td>
+                                @if($bono->categoria)
+                                    @php
+                                        $badgeClass = match($bono->categoria->nombre) {
+                                            'Horas Extra' => 'bg-warning',
+                                            'Comisión por Tours' => 'bg-info',
+                                            'Bono Ocupación' => 'bg-success',
+                                            'Incentivo Puntualidad' => 'bg-primary',
+                                            'Bono Desempeño' => 'bg-secondary',
+                                            'Comisión Ventas' => 'bg-info',
+                                            'Bono Temporada Alta' => 'bg-danger',
+                                            default => 'bg-secondary'
+                                        };
+                                    @endphp
+                                    <span class="badge {{ $badgeClass }}">{{ $bono->categoria->nombre }}</span>
+                                @else
+                                    <span class="badge bg-secondary">Sin categoría</span>
+                                @endif
+                            </td>
+                            <td class="text-success fw-bold">${{ number_format($bono->monto, 2) }}</td>
+                            <td>
+                                <a href="{{ route('bonos.edit', $bono) }}" class="btn btn-warning btn-sm me-1" title="Editar">
                                     <i class="bi bi-pencil"></i>
-                                </button>
-                                <button class="btn btn-info btn-sm me-1">
+                                </a>
+                                <a href="{{ route('bonos.show', $bono) }}" class="btn btn-info btn-sm me-1" title="Ver">
                                     <i class="bi bi-eye"></i>
-                                </button>
-                                <button class="btn btn-danger btn-sm">
-                                    <i class="bi bi-trash"></i>
-                                </button>
+                                </a>
+                                <form action="{{ route('bonos.destroy', $bono) }}" method="POST" class="d-inline" 
+                                      onsubmit="return confirm('¿Estás seguro de eliminar este bono?')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-danger btn-sm" title="Eliminar">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
                             </td>
                         </tr>
+                        @empty
                         <tr>
-                            <td>002</td>
-                            <td>2024-08-18</td>
-                            <td>Servicios de consultoría</td>
-                            <td><span class="badge bg-info">Servicios</span></td>
-                            <td class="text-success fw-bold">$8,750.00</td>
-                            <td><span class="badge bg-success">Completado</span></td>
-                            <td>
-                                <button class="btn btn-warning btn-sm me-1">
-                                    <i class="bi bi-pencil"></i>
-                                </button>
-                                <button class="btn btn-info btn-sm me-1">
-                                    <i class="bi bi-eye"></i>
-                                </button>
-                                <button class="btn btn-danger btn-sm">
-                                    <i class="bi bi-trash"></i>
-                                </button>
+                            <td colspan="7" class="text-center text-muted py-4">
+                                <i class="bi bi-inbox fs-1 text-muted"></i><br>
+                                No hay bonos registrados aún.<br>
+                                <a href="{{ route('bonos.create') }}" class="btn btn-primary btn-sm mt-2">
+                                    <i class="bi bi-plus-circle me-1"></i>Asignar primer bono
+                                </a>
                             </td>
                         </tr>
-                        <tr>
-                            <td>003</td>
-                            <td>2024-08-15</td>
-                            <td>Comisiones por ventas</td>
-                            <td><span class="badge bg-secondary">Comisiones</span></td>
-                            <td class="text-success fw-bold">$3,200.00</td>
-                            <td><span class="badge bg-warning">Pendiente</span></td>
-                            <td>
-                                <button class="btn btn-warning btn-sm me-1">
-                                    <i class="bi bi-pencil"></i>
-                                </button>
-                                <button class="btn btn-info btn-sm me-1">
-                                    <i class="bi bi-eye"></i>
-                                </button>
-                                <button class="btn btn-danger btn-sm">
-                                    <i class="bi bi-trash"></i>
-                                </button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>004</td>
-                            <td>2024-08-12</td>
-                            <td>Venta de licencias de software</td>
-                            <td><span class="badge bg-primary">Ventas</span></td>
-                            <td class="text-success fw-bold">$12,400.00</td>
-                            <td><span class="badge bg-success">Completado</span></td>
-                            <td>
-                                <button class="btn btn-warning btn-sm me-1">
-                                    <i class="bi bi-pencil"></i>
-                                </button>
-                                <button class="btn btn-info btn-sm me-1">
-                                    <i class="bi bi-eye"></i>
-                                </button>
-                                <button class="btn btn-danger btn-sm">
-                                    <i class="bi bi-trash"></i>
-                                </button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>005</td>
-                            <td>2024-08-10</td>
-                            <td>Capacitación empresarial</td>
-                            <td><span class="badge bg-info">Servicios</span></td>
-                            <td class="text-success fw-bold">$5,380.00</td>
-                            <td><span class="badge bg-success">Completado</span></td>
-                            <td>
-                                <button class="btn btn-warning btn-sm me-1">
-                                    <i class="bi bi-pencil"></i>
-                                </button>
-                                <button class="btn btn-info btn-sm me-1">
-                                    <i class="bi bi-eye"></i>
-                                </button>
-                                <button class="btn btn-danger btn-sm">
-                                    <i class="bi bi-trash"></i>
-                                </button>
-                            </td>
-                        </tr>
+                        @endforelse
                     </tbody>
                 </table>
             </div>
             
             <!-- Paginación -->
+            @if($bonos->hasPages())
             <nav aria-label="Page navigation">
-                <ul class="pagination justify-content-center">
-                    <li class="page-item disabled">
-                        <a class="page-link" href="#" tabindex="-1">Anterior</a>
-                    </li>
-                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                    <li class="page-item"><a class="page-link" href="#">2</a></li>
-                    <li class="page-item"><a class="page-link" href="#">3</a></li>
-                    <li class="page-item">
-                        <a class="page-link" href="#">Siguiente</a>
-                    </li>
-                </ul>
+                {{ $bonos->links('pagination::bootstrap-4') }}
             </nav>
+            @endif
         </div>
     </div>
 </div>

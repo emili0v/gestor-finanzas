@@ -1,77 +1,105 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Admin\EmpleadoController;
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\BonoController;
 
+// Landing page (pública)
 Route::get('/', function () {
     return view('landing');
 })->name('landing');
 
-// 📊 Dashboard
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->name('dashboard');
+// === AUTENTICACIÓN ===
+Route::middleware('guest')->group(function () {
+    // Mostrar formulario de login
+    Route::get('/login', function () {
+        return view('auth.login');
+    })->name('login');
 
-// 🔐 Autenticación
-// Login
-Route::get('/login', function () {
-    return view('auth.login'); // Mostrar formulario
-})->name('login');
+    // Procesar login (REAL)
+    Route::post('/login', [LoginController::class, 'login'])->name('login.post');
 
-Route::post('/login', function () {
-    // 👇 Lógica dummy con redirección basada en rol
-    // En implementación real, aquí iría la autenticación
-    return redirect()->route('app.mi-sueldo');
-})->name('login.post');
+    // Mostrar formulario de registro
+    Route::get('/register', function () {
+        return view('auth.register');
+    })->name('register');
 
-// Register
-Route::get('/register', function () {
-    return view('auth.register'); // Mostrar formulario
-})->name('register');
+    // Procesar registro
+    Route::post('/register', [LoginController::class, 'register'])->name('register.post');
+});
 
-Route::post('/register', function () {
-    // 👇 Lógica dummy
-    return redirect()->route('dashboard');
-})->name('register.post');
-
-// Logout
+// Logout (requiere autenticación)
 Route::post('/logout', function () {
-    // 👇 Lógica dummy (cerrar sesión real vendrá con Auth)
-    return redirect()->route('login');
-})->name('logout');
+    Auth::logout();
+    request()->session()->invalidate();
+    request()->session()->regenerateToken();
+    return redirect('/');
+})->name('logout')->middleware('auth');
 
-// 💰 Finanzas
-Route::get('/ingresos', function () {
-    return view('ingresos.index');
-})->name('ingresos.index');
+// === RUTAS PARA ADMINISTRADORES ===
+Route::middleware(['auth', 'user.role:Administrador'])->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-Route::get('/egresos', function () {
-    return view('egresos.index');
-})->name('egresos.index');
+    // Bonos y Comisiones (antes ingresos)
+    Route::get('/ingresos', [BonoController::class, 'index'])->name('ingresos.index');
+    Route::get('/ingresos/crear', [BonoController::class, 'create'])->name('bonos.create');
+    Route::post('/ingresos', [BonoController::class, 'store'])->name('bonos.store');
+    Route::get('/ingresos/{bono}', [BonoController::class, 'show'])->name('bonos.show');
+    Route::get('/ingresos/{bono}/editar', [BonoController::class, 'edit'])->name('bonos.edit');
+    Route::put('/ingresos/{bono}', [BonoController::class, 'update'])->name('bonos.update');
+    Route::delete('/ingresos/{bono}', [BonoController::class, 'destroy'])->name('bonos.destroy');
 
-// 👥 Empleados
-Route::get('/empleados', function () {
-    return view('empleados.index');
-})->name('empleados.index');
+    Route::get('/egresos', function () {
+        return view('egresos.index');
+    })->name('egresos.index');
 
-// 📑 Reportes
-Route::get('/reportes', function () {
-    return view('reportes.index');
-})->name('reportes.index');
-
-// 👤 Perfil
-Route::get('/perfil', function () {
-    return view('profile');
-})->name('profile');
-
-Route::prefix('app')->name('app.')->group(function () {
-    Route::get('/mi-sueldo', [App\Http\Controllers\User\UserDashboardController::class, 'miSueldo'])->name('mi-sueldo');
+    // === RUTAS COMPLETAS PARA EMPLEADOS (CRUD) ===
+    // Lista de empleados
+    Route::get('/empleados', [EmpleadoController::class, 'index'])->name('empleados.index');
     
-    Route::get('/historial', [App\Http\Controllers\User\UserHistorialController::class, 'index'])->name('historial');
+    // Crear empleado
+    Route::get('/empleados/crear', [EmpleadoController::class, 'create'])->name('empleados.create');
+    Route::post('/empleados', [EmpleadoController::class, 'store'])->name('empleados.store');
     
-    Route::get('/gastos', [App\Http\Controllers\User\UserExpenseController::class, 'index'])->name('gastos');
-    Route::post('/gastos', [App\Http\Controllers\User\UserExpenseController::class, 'store'])->name('gastos.store');
+    // Ver empleado específico
+    Route::get('/empleados/{empleado}', [EmpleadoController::class, 'show'])->name('empleados.show');
     
-    Route::get('/metas', [App\Http\Controllers\User\UserGoalsController::class, 'index'])->name('metas');
+    // Editar empleado
+    Route::get('/empleados/{empleado}/editar', [EmpleadoController::class, 'edit'])->name('empleados.edit');
+    Route::put('/empleados/{empleado}', [EmpleadoController::class, 'update'])->name('empleados.update');
+    Route::patch('/empleados/{empleado}', [EmpleadoController::class, 'update'])->name('empleados.update');
     
-    Route::get('/perfil', [App\Http\Controllers\User\UserProfileController::class, 'index'])->name('perfil');
+    // Eliminar empleado
+    Route::delete('/empleados/{empleado}', [EmpleadoController::class, 'destroy'])->name('empleados.destroy');
+
+    Route::get('/reportes', function () {
+        return view('reportes.index');
+    })->name('reportes.index');
+
+    Route::get('/perfil', function () {
+        return view('profile');
+    })->name('profile');
+});
+
+// === RUTAS PARA EMPLEADOS ===
+Route::middleware(['auth', 'user.role:Empleado'])->prefix('app')->name('app.')->group(function () {
+    Route::get('/mi-sueldo', [App\Http\Controllers\User\UserDashboardController::class, 'miSueldo'])
+        ->name('mi-sueldo');
+
+    Route::get('/historial', [App\Http\Controllers\User\UserHistorialController::class, 'index'])
+        ->name('historial');
+
+    Route::get('/gastos', [App\Http\Controllers\User\UserExpenseController::class, 'index'])
+        ->name('gastos');
+    Route::post('/gastos', [App\Http\Controllers\User\UserExpenseController::class, 'store'])
+        ->name('gastos.store');
+
+    Route::get('/metas', [App\Http\Controllers\User\UserGoalsController::class, 'index'])
+        ->name('metas');
+
+    Route::get('/perfil', [App\Http\Controllers\User\UserProfileController::class, 'index'])
+        ->name('perfil');
 });
