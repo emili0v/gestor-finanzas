@@ -21,17 +21,17 @@ class DashboardController extends Controller
         $totalEmpleados = Empleado::count();
         $empleadosActivos = Empleado::count();
         
-        // 2. Cálculos de nómina
+        // 2. Cálculos de nómina (convertir centavos a pesos)
         $totalSueldosBrutos = Sueldo::sum('monto_bruto');
         
-        // 3. Movimientos del mes actual (bonos y descuentos)
+        // 3. Movimientos del mes actual (bonos y descuentos) - CORREGIDO
         $bonosDelMes = Movimiento::whereBetween('fecha', [$inicioMes, $finMes])
                                 ->where('monto', '>', 0)
-                                ->sum('monto');
+                                ->sum('monto') / 100; // Convertir centavos a pesos
                                 
         $descuentosDelMes = Movimiento::whereBetween('fecha', [$inicioMes, $finMes])
                                      ->where('monto', '<', 0)
-                                     ->sum('monto');
+                                     ->sum('monto') / 100; // Convertir centavos a pesos
 
         // 4. Cálculo del costo total de nómina del mes
         $costoNominaDelMes = $totalSueldosBrutos + $bonosDelMes + $descuentosDelMes;

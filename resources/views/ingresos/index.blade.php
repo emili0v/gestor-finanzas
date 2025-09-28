@@ -8,7 +8,8 @@
                 <h1 class="h3 mb-0 text-gray-800">Bonos y Comisiones</h1>
                 <p class="text-muted">Gestiona bonos, comisiones y horas extra del personal del hotel</p>
             </div>
-            <a href="{{ route('bonos.create') }}" class="btn btn-primary">
+            {{-- CORRECCIÓN: Cambiar route('bonos.create') por route('ingresos.create') --}}
+            <a href="{{ route('ingresos.create') }}" class="btn btn-primary">
                 <i class="bi bi-plus-circle me-2"></i>Asignar Bono
             </a>
         </div>
@@ -32,7 +33,7 @@
                             <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
                                 Bonos del Mes
                             </div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">${{ number_format($bonosDelMes, 2) }}</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ formatCLP($bonosDelMes) }}</div>
                         </div>
                         <div class="col-auto">
                             <i class="bi bi-calendar-month fs-2 text-success"></i>
@@ -118,15 +119,16 @@
                                     <span class="badge bg-secondary">Sin categoría</span>
                                 @endif
                             </td>
-                            <td class="text-success fw-bold">${{ number_format($bono->monto, 2) }}</td>
+                            <td class="text-success fw-bold">{{ formatCLP($bono->monto) }}</td>
                             <td>
-                                <a href="{{ route('bonos.edit', $bono) }}" class="btn btn-warning btn-sm me-1" title="Editar">
+                                {{-- CORRECCIÓN: Cambiar todas las rutas de bonos.* por ingresos.* --}}
+                                <a href="{{ route('ingresos.edit', $bono) }}" class="btn btn-warning btn-sm me-1" title="Editar">
                                     <i class="bi bi-pencil"></i>
                                 </a>
-                                <a href="{{ route('bonos.show', $bono) }}" class="btn btn-info btn-sm me-1" title="Ver">
+                                <a href="{{ route('ingresos.show', $bono) }}" class="btn btn-info btn-sm me-1" title="Ver">
                                     <i class="bi bi-eye"></i>
                                 </a>
-                                <form action="{{ route('bonos.destroy', $bono) }}" method="POST" class="d-inline" 
+                                <form action="{{ route('ingresos.destroy', $bono) }}" method="POST" class="d-inline" 
                                       onsubmit="return confirm('¿Estás seguro de eliminar este bono?')">
                                     @csrf
                                     @method('DELETE')
@@ -141,7 +143,8 @@
                             <td colspan="7" class="text-center text-muted py-4">
                                 <i class="bi bi-inbox fs-1 text-muted"></i><br>
                                 No hay bonos registrados aún.<br>
-                                <a href="{{ route('bonos.create') }}" class="btn btn-primary btn-sm mt-2">
+                                {{-- CORRECCIÓN: Cambiar route('bonos.create') por route('ingresos.create') --}}
+                                <a href="{{ route('ingresos.create') }}" class="btn btn-primary btn-sm mt-2">
                                     <i class="bi bi-plus-circle me-1"></i>Asignar primer bono
                                 </a>
                             </td>

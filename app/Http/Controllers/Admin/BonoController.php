@@ -17,10 +17,10 @@ class BonoController extends Controller
         $inicioMes = $mesActual->copy()->startOfMonth();
         $finMes = $mesActual->copy()->endOfMonth();
 
-        // Métricas del mes actual
+        // Métricas del mes actual - CORREGIDO
         $bonosDelMes = Movimiento::whereBetween('created_at', [$inicioMes, $finMes])
                                 ->where('monto', '>', 0)
-                                ->sum('monto');
+                                ->sum('monto') / 100; // Convertir centavos a pesos
 
         $totalBonos = Movimiento::where('monto', '>', 0)->count();
 
@@ -48,7 +48,7 @@ class BonoController extends Controller
             'Bono Temporada Alta'
         ];
 
-        return view('bonos.create', compact('empleados', 'categoriasBonos'));
+        return view('ingresos.create', compact('empleados', 'categoriasBonos'));
     }
 
     public function store(Request $request)
@@ -68,19 +68,19 @@ class BonoController extends Controller
         Movimiento::create([
             'empleado_id' => $request->empleado_id,
             'categoria_id' => $categoria->id,
-            'monto' => abs($request->monto), // Asegurar que sea positivo
+            'monto' => abs($request->monto), // El mutator se encarga de convertir a centavos
             'descripcion' => $request->descripcion,
             'fecha' => $request->fecha,
         ]);
 
-        return redirect()->route('bonos.index')
+        return redirect()->route('ingresos.index')
                         ->with('success', 'Bono asignado exitosamente al empleado.');
     }
 
     public function show(Movimiento $bono)
     {
         $bono->load(['empleado', 'categoria']);
-        return view('bonos.show', compact('bono'));
+        return view('ingresos.show', compact('bono'));
     }
 
     public function edit(Movimiento $bono)
@@ -97,7 +97,7 @@ class BonoController extends Controller
             'Bono Temporada Alta'
         ];
 
-        return view('bonos.edit', compact('bono', 'empleados', 'categoriasBonos'));
+        return view('ingresos.edit', compact('bono', 'empleados', 'categoriasBonos'));
     }
 
     public function update(Request $request, Movimiento $bono)
@@ -115,12 +115,12 @@ class BonoController extends Controller
         $bono->update([
             'empleado_id' => $request->empleado_id,
             'categoria_id' => $categoria->id,
-            'monto' => abs($request->monto),
+            'monto' => abs($request->monto), // El mutator se encarga de convertir a centavos
             'descripcion' => $request->descripcion,
             'fecha' => $request->fecha,
         ]);
 
-        return redirect()->route('bonos.index')
+        return redirect()->route('ingresos.index')
                         ->with('success', 'Bono actualizado exitosamente.');
     }
 
@@ -128,7 +128,7 @@ class BonoController extends Controller
     {
         $bono->delete();
         
-        return redirect()->route('bonos.index')
+        return redirect()->route('ingresos.index')
                         ->with('success', 'Bono eliminado exitosamente.');
     }
 }

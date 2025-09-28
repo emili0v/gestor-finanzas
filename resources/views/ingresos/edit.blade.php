@@ -1,11 +1,11 @@
-@extends('layouts.app')
+ @extends('layouts.app')
 
 @section('content')
 <div class="container-fluid">
     <div class="row mb-4">
         <div class="col-12">
-            <h1 class="h3 mb-0 text-gray-800">Asignar Bono al Personal</h1>
-            <p class="text-muted">Asigna bonos, comisiones y horas extra a empleados del hotel</p>
+            <h1 class="h3 mb-0 text-gray-800">Editar Bono</h1>
+            <p class="text-muted">Modifica la información del bono asignado</p>
         </div>
     </div>
 
@@ -21,10 +21,15 @@
     @endif
 
     <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">
+                Editando Bono #{{ str_pad($bono->id, 3, '0', STR_PAD_LEFT) }}
+            </h6>
+        </div>
         <div class="card-body">
-            {{-- CORRECCIÓN: Cambiar route('bonos.store') por route('ingresos.store') --}}
-            <form action="{{ route('ingresos.store') }}" method="POST">
+            <form action="{{ route('ingresos.update', $bono) }}" method="POST">
                 @csrf
+                @method('PUT')
                 
                 <div class="row">
                     {{-- Seleccionar Empleado --}}
@@ -36,7 +41,8 @@
                                 required>
                             <option value="">Seleccionar empleado</option>
                             @foreach($empleados as $empleado)
-                                <option value="{{ $empleado->id }}" {{ old('empleado_id') == $empleado->id ? 'selected' : '' }}>
+                                <option value="{{ $empleado->id }}" 
+                                    {{ (old('empleado_id', $bono->empleado_id) == $empleado->id) ? 'selected' : '' }}>
                                     {{ $empleado->nombre }} - {{ $empleado->role->nombre ?? 'Sin rol' }}
                                 </option>
                             @endforeach
@@ -55,7 +61,8 @@
                                 required>
                             <option value="">Seleccionar tipo</option>
                             @foreach($categoriasBonos as $categoria)
-                                <option value="{{ $categoria }}" {{ old('categoria_nombre') == $categoria ? 'selected' : '' }}>
+                                <option value="{{ $categoria }}" 
+                                    {{ (old('categoria_nombre', $bono->categoria->nombre ?? '') == $categoria) ? 'selected' : '' }}>
                                     {{ $categoria }}
                                 </option>
                             @endforeach
@@ -74,10 +81,10 @@
                                class="form-control @error('monto') is-invalid @enderror" 
                                id="monto" 
                                name="monto" 
-                               value="{{ old('monto') }}"
+                               value="{{ old('monto', $bono->monto) }}"
                                placeholder="Ej: 50000"
                                min="1"
-                               step="1"
+                               step="1000"
                                required>
                         @error('monto')
                             <div class="invalid-feedback">{{ $message }}</div>
@@ -91,7 +98,7 @@
                                class="form-control @error('fecha') is-invalid @enderror" 
                                id="fecha" 
                                name="fecha" 
-                               value="{{ old('fecha', date('Y-m-d')) }}"
+                               value="{{ old('fecha', $bono->fecha ? \Carbon\Carbon::parse($bono->fecha)->format('Y-m-d') : $bono->created_at->format('Y-m-d')) }}"
                                required>
                         @error('fecha')
                             <div class="invalid-feedback">{{ $message }}</div>
@@ -107,7 +114,7 @@
                               name="descripcion" 
                               rows="3"
                               placeholder="Ej: Horas extra durante evento de fin de año"
-                              required>{{ old('descripcion') }}</textarea>
+                              required>{{ old('descripcion', $bono->descripcion) }}</textarea>
                     @error('descripcion')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
@@ -116,35 +123,41 @@
                     </div>
                 </div>
 
-                {{-- Información del Hotel --}}
-                <div class="card bg-light mb-3">
-                    <div class="card-body">
-                        <h6 class="card-title text-primary">
-                            <i class="bi bi-info-circle me-2"></i>Ejemplos de Bonos en Hotel Yatehue
-                        </h6>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <strong>Horas Extra:</strong> Trabajo adicional en eventos o temporada alta<br>
-                                <strong>Comisión por Tours:</strong> Venta de tours o actividades a huéspedes<br>
-                                <strong>Bono Ocupación:</strong> Incentivo por alta ocupación hotelera
-                            </div>
-                            <div class="col-md-6">
-                                <strong>Incentivo Puntualidad:</strong> Asistencia perfecta durante el mes<br>
-                                <strong>Bono Desempeño:</strong> Evaluaciones positivas de huéspedes<br>
-                                <strong>Bono Temporada Alta:</strong> Trabajo durante fechas especiales
-                            </div>
+                {{-- Información del cambio --}}
+                <div class="alert alert-info">
+                    <h6 class="alert-heading">
+                        <i class="bi bi-info-circle me-2"></i>Información del Bono Original
+                    </h6>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <small>
+                                <strong>Creado:</strong> {{ $bono->created_at->format('d/m/Y H:i') }}<br>
+                                <strong>Empleado Original:</strong> {{ $bono->empleado->nombre }}<br>
+                                <strong>Monto Original:</strong> ${{ number_format($bono->monto, 2) }}
+                            </small>
+                        </div>
+                        <div class="col-md-6">
+                            <small>
+                                <strong>Última Modificación:</strong> {{ $bono->updated_at->format('d/m/Y H:i') }}<br>
+                                <strong>Categoría Original:</strong> {{ $bono->categoria->nombre ?? 'Sin categoría' }}<br>
+                                <strong>ID del Bono:</strong> #{{ str_pad($bono->id, 3, '0', STR_PAD_LEFT) }}
+                            </small>
                         </div>
                     </div>
                 </div>
 
                 {{-- Botones --}}
-                <div class="d-flex justify-content-end gap-2 mt-4">
-                    {{-- CORRECCIÓN: Cambiar route('bonos.index') por route('ingresos.index') --}}
-                    <a href="{{ route('ingresos.index') }}" class="btn btn-secondary">
-                        <i class="bi bi-x-circle me-1"></i>Cancelar
-                    </a>
+                <div class="d-flex justify-content-between mt-4">
+                    <div class="d-flex gap-2">
+                        <a href="{{ route('ingresos.show', $bono) }}" class="btn btn-info">
+                            <i class="bi bi-eye me-1"></i>Ver Detalles
+                        </a>
+                        <a href="{{ route('ingresos.index') }}" class="btn btn-secondary">
+                            <i class="bi bi-x-circle me-1"></i>Cancelar
+                        </a>
+                    </div>
                     <button type="submit" class="btn btn-success">
-                        <i class="bi bi-check-circle me-1"></i>Asignar Bono
+                        <i class="bi bi-check-circle me-1"></i>Actualizar Bono
                     </button>
                 </div>
             </form>
@@ -154,13 +167,13 @@
 
 {{-- JavaScript para mejoras de UX --}}
 <script>
-// Auto-rellenar descripción según el tipo de bono seleccionado
+// Auto-rellenar descripción según el tipo de bono seleccionado (solo si está vacía)
 document.getElementById('categoria_nombre').addEventListener('change', function() {
     const descripcion = document.getElementById('descripcion');
-    const empleadoSelect = document.getElementById('empleado_id');
     const tipo = this.value;
     
-    if (tipo && descripcion.value === '') {
+    // Solo auto-completar si la descripción está vacía
+    if (tipo && descripcion.value.trim() === '') {
         let sugerencia = '';
         switch(tipo) {
             case 'Horas Extra':
@@ -193,5 +206,19 @@ document.getElementById('monto').addEventListener('input', function(e) {
     let valor = e.target.value.replace(/[^0-9]/g, '');
     e.target.value = valor;
 });
+
+// Confirmar cambios antes de enviar
+document.querySelector('form').addEventListener('submit', function(e) {
+    const confirmacion = confirm('¿Estás seguro de que quieres actualizar este bono?');
+    if (!confirmacion) {
+        e.preventDefault();
+    }
+});
 </script>
+
+<style>
+.text-gray-800 {
+    color: #5a5c69 !important;
+}
+</style>
 @endsection

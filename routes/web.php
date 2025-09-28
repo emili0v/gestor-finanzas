@@ -43,14 +43,14 @@ Route::post('/logout', function () {
 Route::middleware(['auth', 'user.role:Administrador'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    // Bonos y Comisiones (antes ingresos)
+    // Bonos y Comisiones (antes ingresos) - RUTAS CORREGIDAS
     Route::get('/ingresos', [BonoController::class, 'index'])->name('ingresos.index');
-    Route::get('/ingresos/crear', [BonoController::class, 'create'])->name('bonos.create');
-    Route::post('/ingresos', [BonoController::class, 'store'])->name('bonos.store');
-    Route::get('/ingresos/{bono}', [BonoController::class, 'show'])->name('bonos.show');
-    Route::get('/ingresos/{bono}/editar', [BonoController::class, 'edit'])->name('bonos.edit');
-    Route::put('/ingresos/{bono}', [BonoController::class, 'update'])->name('bonos.update');
-    Route::delete('/ingresos/{bono}', [BonoController::class, 'destroy'])->name('bonos.destroy');
+    Route::get('/ingresos/crear', [BonoController::class, 'create'])->name('ingresos.create');
+    Route::post('/ingresos', [BonoController::class, 'store'])->name('ingresos.store');
+    Route::get('/ingresos/{bono}', [BonoController::class, 'show'])->name('ingresos.show');
+    Route::get('/ingresos/{bono}/editar', [BonoController::class, 'edit'])->name('ingresos.edit');
+    Route::put('/ingresos/{bono}', [BonoController::class, 'update'])->name('ingresos.update');
+    Route::delete('/ingresos/{bono}', [BonoController::class, 'destroy'])->name('ingresos.destroy');
 
     Route::get('/egresos', function () {
         return view('egresos.index');

@@ -37,7 +37,7 @@
                             <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
                                 Costo Nómina Base
                             </div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">${{ number_format($totalSueldosBrutos, 2) }}</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ formatCLP($totalSueldosBrutos) }}</div>
                         </div>
                         <div class="col-auto">
                             <i class="bi bi-cash-stack fs-2 text-info"></i>
@@ -55,7 +55,7 @@
                             <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
                                 Bonos del Mes
                             </div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">${{ number_format($bonosDelMes, 2) }}</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ formatCLP($bonosDelMes) }}</div>
                         </div>
                         <div class="col-auto">
                             <i class="bi bi-arrow-up-circle fs-2 text-success"></i>
@@ -73,7 +73,7 @@
                             <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
                                 Descuentos del Mes
                             </div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">${{ number_format(abs($descuentosDelMes), 2) }}</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ formatCLP(abs($descuentosDelMes)) }}</div>
                         </div>
                         <div class="col-auto">
                             <i class="bi bi-arrow-down-circle fs-2 text-danger"></i>
@@ -116,7 +116,7 @@
                                         @endif
                                     </td>
                                     <td class="{{ $movimiento->monto > 0 ? 'text-success' : 'text-danger' }}">
-                                        {{ $movimiento->monto > 0 ? '+' : '' }}${{ number_format($movimiento->monto, 2) }}
+                                        {{ $movimiento->monto > 0 ? '+' : '' }}{{ formatCLP($movimiento->monto) }}
                                     </td>
                                     <td><span class="badge bg-success">Completado</span></td>
                                 </tr>
