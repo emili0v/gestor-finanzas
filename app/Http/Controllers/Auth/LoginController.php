@@ -26,8 +26,8 @@ class LoginController extends Controller
             $user = Auth::user();
 
             // 3. Redirigir según el rol del usuario
-            // Asume que role_id = 1 es Administrador
-            if ($user->role_id == 1) {
+            // ✅ CORRECCIÓN: Usar 'role' (STRING) en lugar de 'role_id'
+            if ($user->role === 'admin') {
                 return redirect()->intended(route('dashboard'));
             }
 

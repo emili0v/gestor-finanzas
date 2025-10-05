@@ -6,7 +6,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Admin\EmpleadoController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\BonoController;
-use App\Http\Controllers\Admin\DescuentoController; // NUEVA LÍNEA
+use App\Http\Controllers\Admin\DescuentoController;
 
 // Landing page (pública)
 Route::get('/', function () {
@@ -15,20 +15,16 @@ Route::get('/', function () {
 
 // === AUTENTICACIÓN ===
 Route::middleware('guest')->group(function () {
-    // Mostrar formulario de login
     Route::get('/login', function () {
         return view('auth.login');
     })->name('login');
 
-    // Procesar login (REAL)
     Route::post('/login', [LoginController::class, 'login'])->name('login.post');
 
-    // Mostrar formulario de registro
     Route::get('/register', function () {
         return view('auth.register');
     })->name('register');
 
-    // Procesar registro
     Route::post('/register', [LoginController::class, 'register'])->name('register.post');
 });
 
@@ -41,10 +37,11 @@ Route::post('/logout', function () {
 })->name('logout')->middleware('auth');
 
 // === RUTAS PARA ADMINISTRADORES ===
-Route::middleware(['auth', 'user.role:Administrador'])->group(function () {
+// ✅ CORREGIDO: Usar 'admin' en lugar de 'Administrador'
+Route::middleware(['auth', 'user.role:admin'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    // Bonos y Comisiones (antes ingresos)
+    // Bonos y Comisiones
     Route::get('/ingresos', [BonoController::class, 'index'])->name('ingresos.index');
     Route::get('/ingresos/crear', [BonoController::class, 'create'])->name('ingresos.create');
     Route::post('/ingresos', [BonoController::class, 'store'])->name('ingresos.store');
@@ -53,7 +50,7 @@ Route::middleware(['auth', 'user.role:Administrador'])->group(function () {
     Route::put('/ingresos/{bono}', [BonoController::class, 'update'])->name('ingresos.update');
     Route::delete('/ingresos/{bono}', [BonoController::class, 'destroy'])->name('ingresos.destroy');
 
-    // === NUEVAS RUTAS PARA DESCUENTOS Y ADELANTOS ===
+    // Descuentos y Adelantos
     Route::get('/egresos', [DescuentoController::class, 'index'])->name('egresos.index');
     Route::get('/egresos/crear', [DescuentoController::class, 'create'])->name('egresos.create');
     Route::post('/egresos', [DescuentoController::class, 'store'])->name('egresos.store');
@@ -62,7 +59,7 @@ Route::middleware(['auth', 'user.role:Administrador'])->group(function () {
     Route::put('/egresos/{descuento}', [DescuentoController::class, 'update'])->name('egresos.update');
     Route::delete('/egresos/{descuento}', [DescuentoController::class, 'destroy'])->name('egresos.destroy');
 
-    // === RUTAS COMPLETAS PARA EMPLEADOS (CRUD) ===
+    // Empleados (CRUD completo)
     Route::get('/empleados', [EmpleadoController::class, 'index'])->name('empleados.index');
     Route::get('/empleados/crear', [EmpleadoController::class, 'create'])->name('empleados.create');
     Route::post('/empleados', [EmpleadoController::class, 'store'])->name('empleados.store');
@@ -82,7 +79,8 @@ Route::middleware(['auth', 'user.role:Administrador'])->group(function () {
 });
 
 // === RUTAS PARA EMPLEADOS ===
-Route::middleware(['auth', 'user.role:Empleado'])->prefix('app')->name('app.')->group(function () {
+// ✅ CORREGIDO: Usar 'user' en lugar de 'Empleado'
+Route::middleware(['auth', 'user.role:user'])->prefix('app')->name('app.')->group(function () {
     Route::get('/mi-sueldo', [App\Http\Controllers\User\UserDashboardController::class, 'miSueldo'])
         ->name('mi-sueldo');
 
