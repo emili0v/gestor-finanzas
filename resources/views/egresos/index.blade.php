@@ -93,7 +93,7 @@
                         @forelse($descuentos as $descuento)
                         <tr>
                             <td>{{ str_pad($descuento->id, 3, '0', STR_PAD_LEFT) }}</td>
-                            <td>{{ $descuento->fecha ? \Carbon\Carbon::parse($descuento->fecha)->format('Y-m-d') : $descuento->created_at->format('Y-m-d') }}</td>
+                            <td>{{ $descuento->fecha ? \Carbon\Carbon::parse($descuento->fecha)->format('d/m/Y') : $descuento->created_at->format('d/m/Y') }}</td>
                             <td>
                                 <strong>{{ $descuento->empleado->nombre }}</strong><br>
                                 <small class="text-muted">{{ $descuento->empleado->role->nombre ?? 'Sin rol' }}</small>
@@ -120,11 +120,12 @@
                             </td>
                             <td class="text-danger fw-bold">{{ formatCLP(abs($descuento->monto)) }}</td>
                             <td>
-                                <a href="{{ route('egresos.edit', $descuento) }}" class="btn btn-warning btn-sm me-1" title="Editar">
-                                    <i class="bi bi-pencil"></i>
-                                </a>
+                                {{-- ✅ ACCIONES ALINEADAS COMO EN BONOS: Ver → Editar → Eliminar --}}
                                 <a href="{{ route('egresos.show', $descuento) }}" class="btn btn-info btn-sm me-1" title="Ver">
                                     <i class="bi bi-eye"></i>
+                                </a>
+                                <a href="{{ route('egresos.edit', $descuento) }}" class="btn btn-warning btn-sm me-1" title="Editar">
+                                    <i class="bi bi-pencil"></i>
                                 </a>
                                 <form action="{{ route('egresos.destroy', $descuento) }}" method="POST" class="d-inline" 
                                       onsubmit="return confirm('¿Estás seguro de eliminar este descuento?')">

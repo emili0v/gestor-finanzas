@@ -11,6 +11,7 @@ use App\Models\Role;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 
 class EmpleadoController extends Controller
 {
@@ -36,7 +37,7 @@ class EmpleadoController extends Controller
                 
             // Obtener sueldo más reciente
             $sueldoReciente = $empleado->sueldos()->latest()->first();
-            $sueldoBruto = $sueldoReciente->monto ?? 0;
+            $sueldoBruto = $sueldoReciente->monto_bruto ?? 0;
             
             $empleado->sueldoLiquido = $sueldoBruto + $empleado->totalBonos - $empleado->totalDescuentos;
         }
@@ -53,15 +54,30 @@ class EmpleadoController extends Controller
 
     public function store(Request $request)
     {
-        // Validación corregida según tu estructura de BD
+        // ✅ VALIDACIÓN MEJORADA: Incluye unicidad de RUT y email
         $request->validate([
             'nombre' => 'required|string|max:255',
-            'rut' => 'required|string|max:20|unique:empleados,rut',
+            'rut' => [
+                'required',
+                'string',
+                'max:20',
+                Rule::unique('empleados', 'rut')
+            ],
             'dig_verificador' => 'required|string|size:1',
             'role_id' => 'required|exists:roles,id',
-            'email' => 'required|string|email|max:255|unique:users',
+            'email' => [
+                'required',
+                'string',
+                'email',
+                'max:255',
+                Rule::unique('users', 'email')
+            ],
             'password' => 'required|string|min:8',
             'sueldo_bruto' => 'required|numeric|min:0',
+        ], [
+            'rut.unique' => 'Ya existe un empleado con este RUT.',
+            'email.unique' => 'Ya existe un usuario con este correo electrónico.',
+            'role_id.exists' => 'El cargo seleccionado no es válido.',
         ]);
 
         try {
@@ -80,6 +96,7 @@ class EmpleadoController extends Controller
                     'email' => $request->email,
                     'password' => Hash::make($request->password),
                     'empleado_id' => $empleado->id,
+                    'role' => 'user', // Todos los nuevos empleados tienen rol 'user' en el sistema
                 ]);
 
                 // 3. Crear el sueldo inicial
@@ -113,11 +130,20 @@ class EmpleadoController extends Controller
 
     public function update(Request $request, Empleado $empleado)
     {
+        // ✅ VALIDACIÓN: Permitir el mismo RUT del empleado actual
         $request->validate([
             'nombre' => 'required|string|max:255',
-            'rut' => 'required|string|max:20|unique:empleados,rut,' . $empleado->id,
+            'rut' => [
+                'required',
+                'string',
+                'max:20',
+                Rule::unique('empleados', 'rut')->ignore($empleado->id)
+            ],
             'dig_verificador' => 'required|string|size:1',
             'role_id' => 'required|exists:roles,id',
+        ], [
+            'rut.unique' => 'Ya existe otro empleado con este RUT.',
+            'role_id.exists' => 'El cargo seleccionado no es válido.',
         ]);
 
         try {

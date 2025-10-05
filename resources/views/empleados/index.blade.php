@@ -112,22 +112,23 @@
             <div class="d-flex gap-2">
                 <input type="text" class="form-control form-control-sm" placeholder="Buscar empleado..." style="width: 200px;">
                 <select class="form-select form-select-sm" style="width: 150px;">
-                    <option>Todos los departamentos</option>
+                    <option>Todos los cargos</option>
                     <option>Administración</option>
                     <option>Recepción</option>
+                    <option>Cocina</option>
                     <option>Housekeeping</option>
-                    <option>Restaurante</option>
                 </select>
             </div>
         </div>
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-bordered" width="100%" cellspacing="0">
+                <table class="table table-bordered">
                     <thead>
                         <tr>
                             <th>ID</th>
                             <th>Empleado</th>
                             <th>RUT</th>
+                            <th>Cargo</th>
                             <th>Departamento</th>
                             <th>Sueldo Bruto</th>
                             <th>Descuentos</th>
@@ -148,7 +149,7 @@
                                         </div>
                                         <div>
                                             <div class="fw-bold">{{ $empleado->nombre }}</div>
-                                            <div class="text-muted small">{{ $empleado->role->nombre ?? 'Sin rol' }}</div>
+                                            <div class="text-muted small">{{ $empleado->role->nombre ?? 'Sin cargo' }}</div>
                                         </div>
                                     </div>
                                 </td>
@@ -156,7 +157,10 @@
                                     <span class="font-monospace">{{ $empleado->rut_completo ?? 'Sin RUT' }}</span>
                                 </td>
                                 <td>
-                                    <span class="badge bg-primary">{{ $empleado->departamento ?? 'No asignado' }}</span>
+                                    <span class="badge bg-primary">{{ $empleado->role->nombre ?? 'Sin cargo' }}</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-secondary">{{ $empleado->departamento ?? 'No asignado' }}</span>
                                 </td>
                                 <td class="fw-bold text-primary">
                                     ${{ number_format($empleado->sueldos->last()->monto_bruto ?? 0, 0, ',', '.') }}
@@ -192,7 +196,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="10" class="text-center py-4">
+                                <td colspan="11" class="text-center py-4">
                                     <i class="bi bi-inbox fs-1 text-muted"></i><br>
                                     No hay empleados registrados todavía.<br>
                                     <a href="{{ route('empleados.create') }}" class="btn btn-success btn-sm mt-2">

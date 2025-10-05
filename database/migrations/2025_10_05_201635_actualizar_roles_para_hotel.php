@@ -1,15 +1,19 @@
 <?php
 
-namespace Database\Seeders;
-
-use Illuminate\Database\Seeder;
+use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
-class RolesSeeder extends Seeder
+return new class extends Migration
 {
-    public function run(): void
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
     {
-        //ROLES PARA HOTEL YATEHUE
+        // 1. ELIMINAR todos los roles antiguos (incluidos duplicados)
+        DB::table('roles')->truncate();
+        
+        // 2. INSERTAR los 13 roles del Hotel Yatehue
         DB::table('roles')->insert([
             // Administración
             ['nombre' => 'Administrador', 'created_at' => now(), 'updated_at' => now()],
@@ -35,4 +39,20 @@ class RolesSeeder extends Seeder
             ['nombre' => 'Conductor', 'created_at' => now(), 'updated_at' => now()],
         ]);
     }
-}
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        // Revertir: eliminar roles del hotel
+        DB::table('roles')->truncate();
+        
+        // Restaurar roles antiguos
+        DB::table('roles')->insert([
+            ['nombre' => 'Administrador', 'created_at' => now(), 'updated_at' => now()],
+            ['nombre' => 'Empleado', 'created_at' => now(), 'updated_at' => now()],
+            ['nombre' => 'Contador', 'created_at' => now(), 'updated_at' => now()],
+        ]);
+    }
+};

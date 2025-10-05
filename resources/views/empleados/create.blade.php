@@ -35,7 +35,7 @@
                 <div class="row">
                     {{-- Nombre Completo --}}
                     <div class="col-md-6 mb-3">
-                        <label for="nombre" class="form-label">Nombre Completo *</label>
+                        <label for="nombre" class="form-label">Nombre Completo</label>
                         <input type="text" 
                                class="form-control @error('nombre') is-invalid @enderror" 
                                id="nombre" 
@@ -50,7 +50,7 @@
 
                     {{-- Cargo/Rol --}}
                     <div class="col-md-6 mb-3">
-                        <label for="role_id" class="form-label">Cargo *</label>
+                        <label for="role_id" class="form-label">Cargo</label>
                         <select class="form-select @error('role_id') is-invalid @enderror" 
                                 id="role_id" 
                                 name="role_id" 
@@ -62,10 +62,6 @@
                                         {{ $role->nombre }}
                                     </option>
                                 @endforeach
-                            @else
-                                <option value="1">Administrador</option>
-                                <option value="2">Empleado</option>
-                                <option value="3">Contador</option>
                             @endif
                         </select>
                         @error('role_id')
@@ -77,7 +73,7 @@
                 <div class="row">
                     {{-- RUT --}}
                     <div class="col-md-8 mb-3">
-                        <label for="rut" class="form-label">RUT (sin puntos ni guión) *</label>
+                        <label for="rut" class="form-label">RUT (sin puntos ni guión)</label>
                         <input type="text" 
                                class="form-control @error('rut') is-invalid @enderror" 
                                id="rut" 
@@ -92,7 +88,7 @@
 
                     {{-- Dígito Verificador --}}
                     <div class="col-md-4 mb-3">
-                        <label for="dig_verificador" class="form-label">Dígito Verificador *</label>
+                        <label for="dig_verificador" class="form-label">Dígito Verificador</label>
                         <input type="text" 
                                class="form-control @error('dig_verificador') is-invalid @enderror" 
                                id="dig_verificador" 
@@ -110,7 +106,7 @@
                 <div class="row">
                     {{-- Email --}}
                     <div class="col-md-6 mb-3">
-                        <label for="email" class="form-label">Correo Electrónico *</label>
+                        <label for="email" class="form-label">Correo Electrónico</label>
                         <input type="email" 
                                class="form-control @error('email') is-invalid @enderror" 
                                id="email" 
@@ -125,7 +121,7 @@
 
                     {{-- Contraseña --}}
                     <div class="col-md-6 mb-3">
-                        <label for="password" class="form-label">Contraseña *</label>
+                        <label for="password" class="form-label">Contraseña</label>
                         <input type="password" 
                                class="form-control @error('password') is-invalid @enderror" 
                                id="password" 
@@ -140,7 +136,7 @@
 
                 {{-- Sueldo Bruto --}}
                 <div class="mb-3">
-                    <label for="sueldo_bruto" class="form-label">Sueldo Bruto (CLP) *</label>
+                    <label for="sueldo_bruto" class="form-label">Sueldo Bruto (CLP)</label>
                     <input type="number" 
                            class="form-control @error('sueldo_bruto') is-invalid @enderror" 
                            id="sueldo_bruto" 
