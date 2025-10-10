@@ -11,31 +11,31 @@ class UserSeeder extends Seeder
 {
     public function run(): void
     {
-        // Crear usuario Administrador
-        $adminEmpleado = Empleado::where('role_id', 1)->first();
-        
+        //SIEMPRE crear usuario Admin (aunque no haya empleado asociado)
         User::updateOrCreate(
             ['email' => 'admin@example.com'],
             [
                 'name' => 'Administrador',
                 'password' => Hash::make('password'),
-                'empleado_id' => $adminEmpleado ? $adminEmpleado->id : null,
-                'role' => 'admin' // ✅ Sistema unificado
+                'empleado_id' => null, // No requiere empleado asociado
+                'role' => 'admin'
             ]
         );
 
-        // Crear usuario Empleado
+        // Crear usuario Empleado (solo si existe un empleado con role_id = 2)
         $empleado = Empleado::where('role_id', 2)->first();
         
-        User::updateOrCreate(
-            ['email' => 'empleado@example.com'],
-            [
-                'name' => 'Empleado Demo',
-                'password' => Hash::make('password'),
-                'empleado_id' => $empleado ? $empleado->id : null,
-                'role' => 'user' // ✅ Sistema unificado
-            ]
-        );
+        if ($empleado) {
+            User::updateOrCreate(
+                ['email' => 'empleado@example.com'],
+                [
+                    'name' => 'Empleado Demo',
+                    'password' => Hash::make('password'),
+                    'empleado_id' => $empleado->id,
+                    'role' => 'user'
+                ]
+            );
+        }
 
         // Crear usuario test sin empleado asociado
         User::updateOrCreate(
@@ -43,9 +43,11 @@ class UserSeeder extends Seeder
             [
                 'name' => 'Usuario Test',
                 'password' => Hash::make('password'),
-                'role' => 'user' // ✅ Sistema unificado
+                'empleado_id' => null,
+                'role' => 'user'
             ]
         );
+        
         
         $this->command->info('✅ Usuarios creados con sistema de roles unificado:');
         $this->command->info('Admin: admin@example.com / password (role: admin)');
