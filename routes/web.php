@@ -7,7 +7,10 @@ use App\Http\Controllers\Admin\EmpleadoController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\BonoController;
 use App\Http\Controllers\Admin\DescuentoController;
-
+use App\Http\Controllers\User\GastoPersonalController;
+use App\Http\Controllers\User\MetaAhorroController;
+use App\Http\Controllers\User\AlertaController;
+use App\Http\Controllers\User\PerfilController;
 // Landing page (pública)
 Route::get('/', function () {
     return view('landing');
@@ -37,7 +40,7 @@ Route::post('/logout', function () {
 })->name('logout')->middleware('auth');
 
 // === RUTAS PARA ADMINISTRADORES ===
-// ✅ CORREGIDO: Usar 'admin' en lugar de 'Administrador'
+// CORREGIDO: Usar 'admin' en lugar de 'Administrador'
 Route::middleware(['auth', 'user.role:admin'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
@@ -78,23 +81,32 @@ Route::middleware(['auth', 'user.role:admin'])->group(function () {
     })->name('profile');
 });
 
-// === RUTAS PARA EMPLEADOS ===
-// ✅ CORREGIDO: Usar 'user' en lugar de 'Empleado'
+// ============================================
+// RUTAS PARA USUARIOS/EMPLEADOS (Portal del Empleado)
+// ============================================
 Route::middleware(['auth', 'user.role:user'])->prefix('app')->name('app.')->group(function () {
-    Route::get('/mi-sueldo', [App\Http\Controllers\User\UserDashboardController::class, 'miSueldo'])
-        ->name('mi-sueldo');
-
-    Route::get('/historial', [App\Http\Controllers\User\UserHistorialController::class, 'index'])
-        ->name('historial');
-
-    Route::get('/gastos', [App\Http\Controllers\User\UserExpenseController::class, 'index'])
-        ->name('gastos');
-    Route::post('/gastos', [App\Http\Controllers\User\UserExpenseController::class, 'store'])
-        ->name('gastos.store');
-
-    Route::get('/metas', [App\Http\Controllers\User\UserGoalsController::class, 'index'])
-        ->name('metas');
-
-    Route::get('/perfil', [App\Http\Controllers\User\UserProfileController::class, 'index'])
-        ->name('perfil');
+    
+    // Dashboard del empleado
+    Route::get('/mi-sueldo', [UserDashboardController::class, 'miSueldo'])->name('mi-sueldo');
+    Route::get('/historial', [UserHistorialController::class, 'index'])->name('historial');
+    Route::get('/perfil', [UserProfileController::class, 'index'])->name('perfil');
+    
+    //GASTOS PERSONALES (Módulo completo)
+    Route::get('/gastos', [GastoPersonalController::class, 'index'])->name('gastos');
+    Route::post('/gastos', [GastoPersonalController::class, 'store'])->name('gastos.store');
+    Route::delete('/gastos/{gasto}', [GastoPersonalController::class, 'destroy'])->name('gastos.destroy');
+    
+    //METAS DE AHORRO
+    Route::get('/metas', [MetaAhorroController::class, 'index'])->name('metas');
+    Route::post('/metas', [MetaAhorroController::class, 'store'])->name('metas.store');
+    Route::patch('/metas/{meta}', [MetaAhorroController::class, 'update'])->name('metas.update');
+    Route::delete('/metas/{meta}', [MetaAhorroController::class, 'destroy'])->name('metas.destroy');
+    
+    // ALERTAS DE GASTOS
+    Route::post('/alertas/{alerta}/leer', [AlertaController::class, 'marcarLeida'])->name('alertas.leer');
+    Route::post('/alertas/leer-todas', [AlertaController::class, 'marcarTodasLeidas'])->name('alertas.leer-todas');
+    
+    // CONFIGURACIÓN DE PERFIL
+    Route::get('/perfil/configuracion', [PerfilController::class, 'edit'])->name('perfil.configuracion');
+    Route::put('/perfil/configuracion', [PerfilController::class, 'update'])->name('perfil.actualizar');
 });

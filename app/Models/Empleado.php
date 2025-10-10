@@ -11,11 +11,9 @@ class Empleado extends Model
 
     protected $fillable = ['nombre', 'rut', 'dig_verificador', 'role_id'];
 
-    // 👇 Para que siempre aparezca en JSON
+    //Para que siempre aparezca en JSON
     protected $appends = ['rut_completo'];
 
-    // 👇 REMOVER esta línea que estaba causando problemas
-    // protected $hidden = ['rut', 'dig_verificador']; // ❌ QUITAR ESTO
 
     // Relación con rol
     public function role()
@@ -41,7 +39,7 @@ class Empleado extends Model
         return $this->hasOne(User::class);
     }
 
-    // 👇 Accessor para obtener el RUT completo
+    // Accessor para obtener el RUT completo
     public function getRutCompletoAttribute()
     {
         if (!$this->rut || !$this->dig_verificador) {
@@ -50,5 +48,11 @@ class Empleado extends Model
 
         $rut = number_format($this->rut, 0, ',', '.'); 
         return "{$rut}-{$this->dig_verificador}";
+    }
+       
+    // Relación: Un empleado tiene un perfil de usuario
+    public function perfilUsuario()
+    {
+        return $this->hasOne(PerfilUsuario::class);
     }
 }

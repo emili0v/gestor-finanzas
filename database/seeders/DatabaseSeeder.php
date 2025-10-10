@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
             SueldosSeeder::class,
             MovimientosSeeder::class,
             UserSeeder::class,
+            CategoriasGastosSeeder::class,
         ]);
     }
 }
