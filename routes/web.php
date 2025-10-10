@@ -11,6 +11,10 @@ use App\Http\Controllers\User\GastoPersonalController;
 use App\Http\Controllers\User\MetaAhorroController;
 use App\Http\Controllers\User\AlertaController;
 use App\Http\Controllers\User\PerfilController;
+use App\Http\Controllers\User\UserDashboardController;
+use App\Http\Controllers\User\UserHistorialController;
+use App\Http\Controllers\User\UserProfileController;
+
 // Landing page (pública)
 Route::get('/', function () {
     return view('landing');
@@ -40,7 +44,6 @@ Route::post('/logout', function () {
 })->name('logout')->middleware('auth');
 
 // === RUTAS PARA ADMINISTRADORES ===
-// CORREGIDO: Usar 'admin' en lugar de 'Administrador'
 Route::middleware(['auth', 'user.role:admin'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
@@ -91,12 +94,12 @@ Route::middleware(['auth', 'user.role:user'])->prefix('app')->name('app.')->grou
     Route::get('/historial', [UserHistorialController::class, 'index'])->name('historial');
     Route::get('/perfil', [UserProfileController::class, 'index'])->name('perfil');
     
-    //GASTOS PERSONALES (Módulo completo)
+    // GASTOS PERSONALES (Módulo completo)
     Route::get('/gastos', [GastoPersonalController::class, 'index'])->name('gastos');
     Route::post('/gastos', [GastoPersonalController::class, 'store'])->name('gastos.store');
     Route::delete('/gastos/{gasto}', [GastoPersonalController::class, 'destroy'])->name('gastos.destroy');
     
-    //METAS DE AHORRO
+    // METAS DE AHORRO
     Route::get('/metas', [MetaAhorroController::class, 'index'])->name('metas');
     Route::post('/metas', [MetaAhorroController::class, 'store'])->name('metas.store');
     Route::patch('/metas/{meta}', [MetaAhorroController::class, 'update'])->name('metas.update');

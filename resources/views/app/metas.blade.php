@@ -2,66 +2,33 @@
 
 @section('content')
 <div class="container-fluid">
+    {{-- HEADER --}}
     <div class="row mb-4">
         <div class="col-12">
-            <h1 class="h3 mb-0 text-gray-800">Metas de Ahorro</h1>
-            <p class="text-muted">Controla y planifica tus objetivos de ahorro</p>
+            <h1 class="h3 mb-0 text-gray-800">💰 Mis Metas de Ahorro</h1>
+            <p class="text-muted">Crea y administra tus objetivos financieros</p>
         </div>
     </div>
 
-    <!-- Meta actual -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card shadow">
-                <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">Meta de Ahorro Actual</h6>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <h4 class="text-primary">Meta Mensual: ${{ number_format($metasData['meta_mensual'], 0, ',', '.') }}</h4>
-                            <p class="text-muted mb-3">Ahorro actual: ${{ number_format($metasData['ahorro_actual'], 0, ',', '.') }}</p>
-                            
-                            <div class="progress mb-3" style="height: 25px;">
-                                <div class="progress-bar bg-success" role="progressbar" 
-                                     style="width: {{ $metasData['progreso_porcentaje'] }}%" 
-                                     aria-valuenow="{{ $metasData['progreso_porcentaje'] }}" 
-                                     aria-valuemin="0" aria-valuemax="100">
-                                    {{ $metasData['progreso_porcentaje'] }}%
-                                </div>
-                            </div>
-                            
-                            <p class="small text-muted">
-                                Te faltan ${{ number_format($metasData['meta_mensual'] - $metasData['ahorro_actual'], 0, ',', '.') }} 
-                                para cumplir tu meta mensual
-                            </p>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="text-center">
-                                <div class="mb-3">
-                                    <i class="bi bi-piggy-bank" style="font-size: 4rem; color: #1cc88a;"></i>
-                                </div>
-                                <h5 class="text-success">¡Vas muy bien!</h5>
-                                <p class="text-muted">Has ahorrado {{ $metasData['progreso_porcentaje'] }}% de tu meta mensual</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+    {{-- ALERTAS --}}
+    @if(session('success'))
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle me-2"></i>{{ session('success') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
+    @endif
 
-    <!-- Estadísticas de ahorro -->
+    {{-- RESUMEN GENERAL --}}
     <div class="row mb-4">
-        <div class="col-xl-3 col-md-6 mb-4">
+        <div class="col-xl-4 col-md-6 mb-4">
             <div class="card border-left-success shadow h-100 py-2">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                Total Ahorrado
+                                Total Ahorrado (Activo)
                             </div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">${{ number_format($metasData['total_ahorrado'], 0, ',', '.') }}</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ formatCLP($totalAhorradoActivo) }}</div>
                         </div>
                         <div class="col-auto">
                             <i class="bi bi-wallet2 fs-2 text-success"></i>
@@ -71,54 +38,36 @@
             </div>
         </div>
 
-        <div class="col-xl-3 col-md-6 mb-4">
+        <div class="col-xl-4 col-md-6 mb-4">
             <div class="card border-left-info shadow h-100 py-2">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
-                                Meses Ahorrando
+                                Meta Total (Activo)
                             </div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $metasData['meses_ahorrando'] }}</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ formatCLP($totalObjetivoActivo) }}</div>
                         </div>
                         <div class="col-auto">
-                            <i class="bi bi-calendar-check fs-2 text-info"></i>
+                            <i class="bi bi-target fs-2 text-info"></i>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-warning shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                                Meta Anual
-                            </div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">${{ number_format($metasData['meta_anual'], 0, ',', '.') }}</div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="bi bi-target fs-2 text-warning"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-xl-3 col-md-6 mb-4">
+        <div class="col-xl-4 col-md-6 mb-4">
             <div class="card border-left-primary shadow h-100 py-2">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                Proyección Anual
+                                Progreso General
                             </div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">${{ number_format($metasData['proyeccion_fin_ano'], 0, ',', '.') }}</div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="bi bi-graph-up-arrow fs-2 text-primary"></i>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $progresoGeneral }}%</div>
+                            <div class="progress mt-2" style="height: 10px;">
+                                <div class="progress-bar bg-primary" style="width: {{ min($progresoGeneral, 100) }}%"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -126,107 +75,172 @@
         </div>
     </div>
 
-    <!-- Progreso anual -->
+    {{-- FORMULARIO NUEVA META --}}
     <div class="row mb-4">
         <div class="col-12">
             <div class="card shadow">
                 <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">Progreso Anual</h6>
+                    <h6 class="m-0 font-weight-bold text-primary">➕ Crear Nueva Meta de Ahorro</h6>
                 </div>
                 <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span>Meta Anual: ${{ number_format($metasData['meta_anual'], 0, ',', '.') }}</span>
-                        <span class="text-primary font-weight-bold">{{ $metasData['progreso_anual'] }}%</span>
-                    </div>
-                    <div class="progress mb-3" style="height: 20px;">
-                        <div class="progress-bar bg-primary" role="progressbar" 
-                             style="width: {{ $metasData['progreso_anual'] }}%" 
-                             aria-valuenow="{{ $metasData['progreso_anual'] }}" 
-                             aria-valuemin="0" aria-valuemax="100">
+                    <form method="POST" action="{{ route('app.metas.store') }}">
+                        @csrf
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="nombre_meta" class="form-label">Nombre de la Meta *</label>
+                                <input type="text" class="form-control @error('nombre_meta') is-invalid @enderror" 
+                                       id="nombre_meta" name="nombre_meta" value="{{ old('nombre_meta') }}" 
+                                       placeholder="Ej: Vacaciones 2025" required>
+                                @error('nombre_meta')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label for="monto_objetivo" class="form-label">Monto Objetivo (CLP) *</label>
+                                <input type="number" class="form-control @error('monto_objetivo') is-invalid @enderror" 
+                                     id="monto_objetivo" name="monto_objetivo" value="{{ old('monto_objetivo') }}" 
+                                    min="1" step="1" placeholder="500000" required>
+                                @error('monto_objetivo')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label for="fecha_objetivo" class="form-label">Fecha Objetivo</label>
+                                <input type="date" class="form-control @error('fecha_objetivo') is-invalid @enderror" 
+                                    id="fecha_objetivo" name="fecha_objetivo" value="{{ old('fecha_objetivo') }}"
+                                    min="{{ date('Y-m-d', strtotime('+1 day')) }}">
+                                @error('fecha_objetivo')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            <div class="col-md-2 mb-3 d-flex align-items-end">
+                                <button type="submit" class="btn btn-primary w-100">
+                                    <i class="bi bi-plus-circle"></i> Crear
+                                </button>
+                            </div>
                         </div>
-                    </div>
-                    <p class="text-muted small">
-                        Ahorrado: ${{ number_format($metasData['total_ahorrado'], 0, ',', '.') }} | 
-                        Proyección fin de año: ${{ number_format($metasData['proyeccion_fin_ano'], 0, ',', '.') }}
-                    </p>
+                        <div class="row">
+                            <div class="col-12">
+                                <label for="descripcion" class="form-label">Descripción (Opcional)</label>
+                                <textarea class="form-control @error('descripcion') is-invalid @enderror" 
+                                          id="descripcion" name="descripcion" rows="2" 
+                                          placeholder="Describe tu objetivo...">{{ old('descripcion') }}</textarea>
+                                @error('descripcion')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Historial de metas -->
+    {{-- METAS ACTIVAS --}}
     <div class="row">
         <div class="col-12">
             <div class="card shadow mb-4">
                 <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">Historial de Metas Mensuales</h6>
+                    <h6 class="m-0 font-weight-bold text-primary">🎯 Metas Activas</h6>
                 </div>
                 <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-bordered" width="100%" cellspacing="0">
-                            <thead>
-                                <tr>
-                                    <th>Mes</th>
-                                    <th>Meta</th>
-                                    <th>Ahorrado</th>
-                                    <th>Progreso</th>
-                                    <th>Estado</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($historialMetas as $meta)
-                                <tr>
-                                    <td>{{ $meta['mes'] }}</td>
-                                    <td>${{ number_format($meta['meta'], 0, ',', '.') }}</td>
-                                    <td class="font-weight-bold {{ $meta['cumplida'] ? 'text-success' : 'text-warning' }}">
-                                        ${{ number_format($meta['ahorrado'], 0, ',', '.') }}
-                                    </td>
-                                    <td>
-                                        @php $progreso = ($meta['ahorrado'] / $meta['meta']) * 100; @endphp
-                                        <div class="progress" style="height: 15px;">
-                                            <div class="progress-bar {{ $meta['cumplida'] ? 'bg-success' : 'bg-warning' }}" 
-                                                 style="width: {{ min($progreso, 100) }}%">
-                                            </div>
+                    @forelse($metasActivas as $meta)
+                    <div class="card mb-3 border-left-primary">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <h5 class="font-weight-bold text-primary">{{ $meta->nombre_meta }}</h5>
+                                    @if($meta->descripcion)
+                                    <p class="text-muted small mb-2">{{ $meta->descripcion }}</p>
+                                    @endif
+                                    <div class="mb-2">
+                                        <strong>Objetivo:</strong> {{ formatCLP($meta->monto_objetivo) }} | 
+                                        <strong>Ahorrado:</strong> <span class="text-success">{{ formatCLP($meta->monto_actual) }}</span> |
+                                        <strong>Falta:</strong> <span class="text-danger">{{ formatCLP($meta->monto_pendiente) }}</span>
+                                    </div>
+                                    @if($meta->fecha_objetivo)
+                                    <div class="small text-muted">
+                                        <i class="bi bi-calendar-event"></i> Objetivo: {{ $meta->fecha_objetivo->format('d/m/Y') }}
+                                    </div>
+                                    @endif
+                                    <div class="progress mt-2" style="height: 25px;">
+                                        <div class="progress-bar bg-success" style="width: {{ min($meta->progreso, 100) }}%">
+                                            {{ number_format($meta->progreso, 1) }}%
                                         </div>
-                                        <small class="text-muted">{{ number_format($progreso, 1) }}%</small>
-                                    </td>
-                                    <td>
-                                        @if($meta['cumplida'])
-                                            <span class="badge bg-success">Cumplida</span>
-                                        @else
-                                            <span class="badge bg-warning">Parcial</span>
-                                        @endif
-                                    </td>
-                                </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 d-flex flex-column justify-content-center">
+                                    <form method="POST" action="{{ route('app.metas.update', $meta) }}" class="mb-2">
+                                        @csrf
+                                        @method('PATCH')
+                                        <div class="input-group">
+                                            <span class="input-group-text">$</span>
+                                            <input type="number" class="form-control" name="monto_agregar" 
+                                                   placeholder="Agregar ahorro" min="1" step="1000" required>
+                                            <button type="submit" class="btn btn-success">
+                                                <i class="bi bi-plus"></i>
+                                            </button>
+                                        </div>
+                                    </form>
+                                    <form method="POST" action="{{ route('app.metas.destroy', $meta) }}" 
+                                          onsubmit="return confirm('¿Cancelar esta meta?')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-outline-danger btn-sm w-100">
+                                            <i class="bi bi-x-circle"></i> Cancelar Meta
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
                     </div>
+                    @empty
+                    <div class="text-center py-4 text-muted">
+                        <i class="bi bi-inbox fs-1"></i><br>
+                        No tienes metas activas.<br>
+                        <small>¡Crea tu primera meta de ahorro!</small>
+                    </div>
+                    @endforelse
                 </div>
             </div>
         </div>
     </div>
+
+    {{-- METAS COMPLETADAS --}}
+    @if($metasCompletadas->count() > 0)
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-success"> Metas Completadas (Últimas 5)</h6>
+                </div>
+                <div class="card-body">
+                    @foreach($metasCompletadas as $meta)
+                    <div class="card mb-2 border-left-success">
+                        <div class="card-body py-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong>{{ $meta->nombre_meta }}</strong>
+                                    <span class="badge bg-success ms-2">Completada</span>
+                                </div>
+                                <div class="text-success font-weight-bold">
+                                    {{ formatCLP($meta->monto_objetivo) }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
 </div>
 
 <style>
-.border-left-success {
-    border-left: 0.25rem solid #1cc88a !important;
-}
-
-.border-left-info {
-    border-left: 0.25rem solid #36b9cc !important;
-}
-
-.border-left-warning {
-    border-left: 0.25rem solid #f6c23e !important;
-}
-
-.border-left-primary {
-    border-left: 0.25rem solid #0d6efd !important;
-}
-
-.text-gray-800 {
-    color: #5a5c69 !important;
-}
+.border-left-success { border-left: 0.25rem solid #1cc88a !important; }
+.border-left-primary { border-left: 0.25rem solid #0d6efd !important; }
+.border-left-info { border-left: 0.25rem solid #36b9cc !important; }
+.text-gray-800 { color: #5a5c69 !important; }
 </style>
 @endsection

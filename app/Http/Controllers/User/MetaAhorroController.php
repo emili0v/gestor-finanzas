@@ -55,7 +55,13 @@ class MetaAhorroController extends Controller
             'nombre_meta' => 'required|string|max:255',
             'descripcion' => 'nullable|string',
             'monto_objetivo' => 'required|numeric|min:1',
-            'fecha_objetivo' => 'nullable|date|after:today',
+            'fecha_objetivo' => 'nullable|date|after_or_equal:today',
+        ], [
+            'nombre_meta.required' => 'El nombre de la meta es obligatorio.',
+            'monto_objetivo.required' => 'El monto objetivo es obligatorio.',
+            'monto_objetivo.numeric' => 'El monto debe ser un número válido.',
+            'monto_objetivo.min' => 'El monto debe ser mayor a 0.',
+            'fecha_objetivo.after_or_equal' => 'La fecha objetivo no puede ser en el pasado.',
         ]);
 
         $user = $request->user();
@@ -83,6 +89,10 @@ class MetaAhorroController extends Controller
     {
         $request->validate([
             'monto_agregar' => 'required|numeric|min:0.01',
+        ], [
+            'monto_agregar.required' => 'Debes ingresar un monto.',
+            'monto_agregar.numeric' => 'El monto debe ser un número válido.',
+            'monto_agregar.min' => 'El monto debe ser mayor a 0.',
         ]);
 
         $meta->agregarAhorro($request->monto_agregar);
@@ -93,6 +103,7 @@ class MetaAhorroController extends Controller
     public function destroy(MetaAhorro $meta)
     {
         $meta->update(['estado' => 'cancelada']);
+        
         return redirect()->route('app.metas')->with('success', 'Meta cancelada exitosamente');
     }
 }
